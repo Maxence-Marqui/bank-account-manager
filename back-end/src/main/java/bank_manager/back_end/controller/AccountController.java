@@ -15,11 +15,9 @@ import java.util.List;
 @RequestMapping("/accounts")
 public class AccountController {
     private final AccountService accountService;
-    private final UserService userService;
 
     public AccountController(AccountService accountService, UserService userService) {
         this.accountService = accountService;
-        this.userService = userService;
     }
 
     @GetMapping
@@ -52,12 +50,12 @@ public class AccountController {
         return new ResponseEntity<>(accountService.addUserToAccount(accountId, userId), HttpStatus.OK);
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     public  ResponseEntity<AccountDto> updateAccount(@PathVariable Long id, @RequestBody AccountDto accountDto){
         return new ResponseEntity<>(accountService.updateAccount(id, accountDto), HttpStatus.OK);
     }
 
-    @PutMapping("{accountId}/main-user/{userId}")
+    @PatchMapping("{accountId}/main-user/{userId}")
     public ResponseEntity<AccountDto> changeMainUser(@PathVariable Long accountId, @PathVariable Long userId){
         return new ResponseEntity<>(accountService.changeMainUser(accountId, userId), HttpStatus.OK);
     }

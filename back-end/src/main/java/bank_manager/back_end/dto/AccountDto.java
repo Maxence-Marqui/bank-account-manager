@@ -7,6 +7,7 @@ import bank_manager.back_end.enums.EntityStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -20,11 +21,15 @@ public class AccountDto {
     @NotNull(message = "Account name must not be null")
     private String accountName;
     private String accountNumber;
-    private User mainUser;
-    private List<UsersAccounts> userAccounts;
+    private Long mainUserId;
+    private List<Long> userIds;
     private Double balance;
     private Flag flagId;
 
     @NotNull(message = "Status must not be null")
     private EntityStatus status;
+
+    public List<Long> getUserIds() {
+        return userIds != null ? userIds : new ArrayList<>();
+    }
 }

@@ -5,6 +5,7 @@ import bank_manager.back_end.dto.UserDto;
 import bank_manager.back_end.entity.Account;
 import bank_manager.back_end.service.AccountService;
 import bank_manager.back_end.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +22,11 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final AccountService accountService;
 
     @PostMapping
-    public ResponseEntity<UserDto> createSimpleUser(@RequestBody UserDto userDto){
+    public ResponseEntity<UserDto> createUser(@RequestBody @Valid UserDto userDto){
         return new ResponseEntity<>(userService.createUser(userDto), HttpStatus.CREATED);
     }
-
 
     @GetMapping
     public ResponseEntity<List<UserDto>> getAllUsers(){
@@ -40,7 +39,7 @@ public class UserController {
     }
 
     @GetMapping("/ids")
-    public ResponseEntity<List<UserDto>> getUsersById(@RequestBody List<Long> ids){
+    public ResponseEntity<List<UserDto>> getUsersById(@RequestParam List<Long> ids){
         return new ResponseEntity<>(userService.getUserListById(ids), HttpStatus.OK);
     }
 

@@ -4,17 +4,22 @@ import bank_manager.back_end.dto.AccountDto;
 import bank_manager.back_end.dto.UserDto;
 import bank_manager.back_end.entity.Account;
 import bank_manager.back_end.entity.User;
+import bank_manager.back_end.entity.UsersAccounts;
 import bank_manager.back_end.enums.EntityStatus;
 import bank_manager.back_end.mappers.impl.AccountMapper;
 import bank_manager.back_end.mappers.impl.UserMapper;
 import bank_manager.back_end.repository.AccountRepository;
 import bank_manager.back_end.repository.UserRepository;
+import bank_manager.back_end.repository.UsersAccountsRepository;
 import bank_manager.back_end.service.AccountService;
 import bank_manager.back_end.service.UsersAccountsService;
+import bank_manager.back_end.utils.RandomUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,11 +33,27 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UsersAccountsRepository usersAccountsRepository;
 
     @Override
     public AccountDto createAccount(AccountDto accountDto) {
-        Account account = AccountMapper.toAccount(accountDto);
+        User mainUser = userRepository.findById(accountDto.getMainUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Account account = AccountMapper.toAccount(accountDto, mainUser, new ArrayList<>());
+        account.setAccountNumber(RandomUtils.generateUniqueAccountNumber());
+
         Account savedAccount = accountRepository.save(account);
+
+        UsersAccounts usersAccounts = new UsersAccounts();
+        usersAccounts.setAccount(savedAccount);
+        usersAccounts.setUser(account.getMainUser());
+        usersAccounts.setJoinedAt(LocalDate.now());
+        usersAccountsRepository.save(usersAccounts);
+
+        savedAccount.getAccountUsers().add(usersAccounts);
+
         return AccountMapper.toDto(savedAccount);
     }
 

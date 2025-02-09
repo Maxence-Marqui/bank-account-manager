@@ -2,13 +2,20 @@ package bank_manager.back_end.mappers.impl;
 
 import bank_manager.back_end.dto.UserDto;
 import bank_manager.back_end.entity.User;
+import bank_manager.back_end.entity.UsersAccounts;
+import bank_manager.back_end.repository.UserRepository;
+import bank_manager.back_end.repository.UsersAccountsRepository;
 import bank_manager.back_end.utils.PasswordUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class UserMapper {
-    public static User toUser(UserDto userDto){
+
+    public static User toUser(UserDto userDto, List<UsersAccounts> usersAccounts){
+
         return new User(
                 userDto.getId(),
                 userDto.getFirstName(),
@@ -19,11 +26,16 @@ public class UserMapper {
                 userDto.getPhoneNumber(),
                 userDto.getFlagId(),
                 userDto.getStatus(),
-                userDto.getUserAccounts()
+                usersAccounts
         );
     }
 
     public static UserDto toDto(User user){
+
+        List<Long> accountIds = user.getUserAccounts().stream()
+                .map(usersAccounts -> usersAccounts.getAccount().getId())
+                .toList();
+
         return new UserDto(
                 user.getId(),
                 user.getFirstName(),
@@ -33,7 +45,7 @@ public class UserMapper {
                 user.getPhoneNumber(),
                 user.getStatus(),
                 user.getFlagId(),
-                user.getUserAccounts(),
+                accountIds,
                 user.getPassword()
         );
     }

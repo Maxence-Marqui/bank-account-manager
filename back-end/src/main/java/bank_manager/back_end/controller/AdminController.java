@@ -2,6 +2,7 @@ package bank_manager.back_end.controller;
 
 import bank_manager.back_end.dto.AdminDto;
 import bank_manager.back_end.service.AdminService;
+import bank_manager.back_end.service.ResetDatabaseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,8 @@ import java.util.Optional;
 public class AdminController {
 
     private final AdminService adminService;
+    private final ResetDatabaseService resetDatabaseService;
+
 
     @PostMapping
     public ResponseEntity<AdminDto> createAdmin(@RequestBody @Valid AdminDto adminDto){
@@ -44,6 +47,12 @@ public class AdminController {
     @DeleteMapping("/{id}")
     public ResponseEntity<AdminDto> deleteAdmin(@PathVariable Long id){
         return new ResponseEntity<>(adminService.deleteAdmin(id), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/reset")
+    public ResponseEntity<String> resetDatabase() {
+        resetDatabaseService.deleteAll();
+        return ResponseEntity.ok("Database has been reset to clean state");
     }
 
 }

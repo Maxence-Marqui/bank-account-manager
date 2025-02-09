@@ -16,6 +16,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -34,7 +36,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto userDto) {
-        User user = UserMapper.toUser(userDto);
+        User user = UserMapper.toUser(userDto, new ArrayList<>());
         User savedUser = userRepository.save(user);
         return UserMapper.toDto(savedUser);
     }
@@ -101,6 +103,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> getUserListById(List<Long> ids) {
         List<User> userList = userRepository.findAllById(ids);
+        if(userList.isEmpty()) return Collections.emptyList();
         return UserMapper.toDtoList(userList);
     }
 
@@ -109,6 +112,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId).
                 orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
         List<Account> accountList = usersAccountsService.getUserAccounts(user);
+        if(accountList.isEmpty()) return Collections.emptyList();
         return AccountMapper.toDtoList(accountList);
     }
 

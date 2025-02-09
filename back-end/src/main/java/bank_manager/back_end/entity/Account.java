@@ -1,6 +1,8 @@
 package bank_manager.back_end.entity;
 
 import bank_manager.back_end.enums.EntityStatus;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
 import lombok.AllArgsConstructor;
@@ -17,6 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "accounts", uniqueConstraints = @UniqueConstraint(columnNames = "account_number"))
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Account {
 
     @Id
@@ -29,6 +32,7 @@ public class Account {
     @ManyToOne
     @JoinColumn(name = "main_user_id", nullable = false, referencedColumnName = "id")
     private User mainUser;
+
 
     @Column(name = "account_number", nullable = false, unique = true)
     private String accountNumber;
@@ -44,6 +48,18 @@ public class Account {
     @Column(name = "account_status", nullable = false)
     private EntityStatus status;
 
-    @OneToMany(mappedBy = "account")
+    @OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
     private List<UsersAccounts> accountUsers = new ArrayList<>();
+
+    public Account(Long id){
+        this.id = id;
+    }
+
+    public List<UsersAccounts> getAccountUsers() {
+        return accountUsers.stream()
+                .filter(ua -> ua.getLeftAt() == null)
+                .toList();
+
+        //return accountUsers != null ? accountUsers : new ArrayList<>();
+    }
 }
