@@ -15,52 +15,60 @@ import bank_manager.back_end.service.AccountService;
 import bank_manager.back_end.service.UsersAccountsService;
 import bank_manager.back_end.utils.RandomUtils;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private UsersAccountsService usersAccountsService;
-
     @Autowired
     private AccountRepository accountRepository;
-
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private UsersAccountsRepository usersAccountsRepository;
 
     @Override
-    public AccountDto createAccount(AccountDto accountDto) {
-        User mainUser = userRepository.findById(accountDto.getMainUserId())
+    public List<AccountDto> createAccount(Long userId, AccountDto accountDto) {
+        User mainUser = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Account account = AccountMapper.toAccount(accountDto, mainUser, new ArrayList<>());
-        account.setAccountNumber(RandomUtils.generateUniqueAccountNumber());
+        accountDto.setBalance(0.0);
+        accountDto.setAccountNumber(RandomUtils.generateUniqueAccountNumber());
 
+        HashMap<String, Object> mainUserData = new HashMap<>();
+        mainUserData.put("firstName", mainUser.getFirstName());
+        mainUserData.put("lastname", mainUser.getLastName());
+        mainUserData.put("id", mainUser.getId());
+
+        accountDto.setMainUser(mainUserData);
+        accountDto.setStatus(EntityStatus.ACTIVE);
+
+        Account account = AccountMapper.toAccount(accountDto, mainUser, new ArrayList<>());
         Account savedAccount = accountRepository.save(account);
 
         UsersAccounts usersAccounts = new UsersAccounts();
         usersAccounts.setAccount(savedAccount);
-        usersAccounts.setUser(account.getMainUser());
+        usersAccounts.setUser(mainUser);
         usersAccounts.setJoinedAt(LocalDate.now());
         usersAccountsRepository.save(usersAccounts);
 
-        savedAccount.getAccountUsers().add(usersAccounts);
-
-        return AccountMapper.toDto(savedAccount);
+        return usersAccountsService.getUserAccounts(userId);
     }
 
     @Override
-    public AccountDto updateAccount(Long id, AccountDto accountDto) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Account not found with id: " + id));
+    public List<AccountDto> updateAccount(Long userId, Long accountId, AccountDto accountDto) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new EntityNotFoundException("Account not found with id: " + accountId));
 
         if (accountDto.getAccountName() != null){
             account.setAccountName(accountDto.getAccountName());
@@ -70,17 +78,18 @@ public class AccountServiceImpl implements AccountService {
             account.setStatus(accountDto.getStatus());
         }
 
-        Account savedAccount = accountRepository.save(account);
-        return AccountMapper.toDto(savedAccount);
+        accountRepository.save(account);
+        return usersAccountsService.getUserAccounts(userId);
     }
 
     @Override
-    public AccountDto deleteAccount(Long id) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Account not found with id: " + id));
+    public List<AccountDto> deleteAccount(Long userId, Long accountId) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new EntityNotFoundException("Account not found with id: " + accountId));
         account.setStatus(EntityStatus.ARCHIVED);
-        Account savedAccount = accountRepository.save(account);
-        return AccountMapper.toDto(savedAccount);
+        accountRepository.save(account);
+
+        return usersAccountsService.getUserAccounts(userId);
     }
 
     @Override

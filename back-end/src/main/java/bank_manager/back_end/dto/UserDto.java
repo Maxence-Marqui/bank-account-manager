@@ -38,7 +38,6 @@ public class UserDto {
     @NotNull(message = "Phone number is mandatory")
     private String phoneNumber;
 
-    @NotNull(message = "Status is mandatory")
     private EntityStatus status;
 
     private Flag flagId;

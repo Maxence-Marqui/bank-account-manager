@@ -6,9 +6,9 @@ import bank_manager.back_end.dto.UserDto;
 import java.util.List;
 
 public interface AccountService {
-    AccountDto createAccount(AccountDto accountDto);
-    AccountDto updateAccount(Long id, AccountDto accountDto);
-    AccountDto deleteAccount(Long id);
+    List<AccountDto> createAccount(Long userId, AccountDto accountDto);
+    List<AccountDto> updateAccount(Long userId, Long accountId, AccountDto accountDto);
+    List<AccountDto> deleteAccount(Long userId, Long accountId);
     AccountDto getAccountById(Long id);
     List<AccountDto> getAllAccount();
     List<AccountDto> getAccountListById(List<Long> idList);

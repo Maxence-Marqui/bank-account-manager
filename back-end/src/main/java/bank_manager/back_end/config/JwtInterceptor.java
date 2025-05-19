@@ -8,18 +8,28 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import javax.swing.text.html.parser.Entity;
 import java.io.IOException;
+import io.jsonwebtoken.*;
 
 @Component
 public class JwtInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
 
+        if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            return true;
+        }
+
         String token = request.getHeader("Authorization").substring(7);
 
-        if (token == null || !JwtUtils.isTokenValid(token)) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");
+        try {
+            if (!JwtUtils.isTokenValid(token)) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");
+                return false;
+            }
+        } catch (Exception e) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token signature");
             return false;
         }
 

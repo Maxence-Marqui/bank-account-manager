@@ -4,42 +4,41 @@ import bank_manager.back_end.dto.AccountDto;
 import bank_manager.back_end.dto.UserDto;
 import bank_manager.back_end.entity.Account;
 import bank_manager.back_end.entity.User;
+import bank_manager.back_end.entity.UsersAccounts;
 import bank_manager.back_end.enums.EntityStatus;
 import bank_manager.back_end.mappers.impl.AccountMapper;
 import bank_manager.back_end.mappers.impl.UserMapper;
 import bank_manager.back_end.repository.AccountRepository;
 import bank_manager.back_end.repository.UserRepository;
+import bank_manager.back_end.repository.UsersAccountsRepository;
 import bank_manager.back_end.service.UserService;
 import bank_manager.back_end.service.UsersAccountsService;
 import bank_manager.back_end.utils.PasswordUtils;
+import bank_manager.back_end.utils.RandomUtils;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    @Autowired
     private final UserRepository userRepository;
+    @Autowired
     private final AccountRepository accountRepository;
     @Autowired
     private UsersAccountsService usersAccountsService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, AccountRepository accountRepository) {
-        this.userRepository = userRepository;
-        this.accountRepository = accountRepository;
-    }
+    private UsersAccountsRepository usersAccountsRepository;
 
-    @Override
-    public UserDto createUser(UserDto userDto) {
-        User user = UserMapper.toUser(userDto, new ArrayList<>());
-        User savedUser = userRepository.save(user);
-        return UserMapper.toDto(savedUser);
-    }
 
     @Override
     public UserDto updateUser(Long id, UserDto userDto) {
@@ -106,14 +105,4 @@ public class UserServiceImpl implements UserService {
         if(userList.isEmpty()) return Collections.emptyList();
         return UserMapper.toDtoList(userList);
     }
-
-    @Override
-    public List<AccountDto> getUserAccounts(Long userId) {
-        User user = userRepository.findById(userId).
-                orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
-        List<Account> accountList = usersAccountsService.getUserAccounts(user);
-        if(accountList.isEmpty()) return Collections.emptyList();
-        return AccountMapper.toDtoList(accountList);
-    }
-
 }

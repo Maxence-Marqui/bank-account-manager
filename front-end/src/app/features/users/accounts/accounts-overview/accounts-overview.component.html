@@ -1,0 +1,40 @@
+<div class="container mt-4">
+    <h2>Mes Comptes</h2>
+
+    <div class="card p-3 mb-3">
+        <h5>{{ editingAccount ? 'Modifier un compte' : 'Ajouter un compte' }}</h5>
+        <form (ngSubmit)="saveAccount()">
+          <div class="mb-2">
+            <label for="accountName" class="form-label">Nom du compte</label>
+            <input type="text" id="accountName" [(ngModel)]="accountData.accountName" name="accountName"
+                   class="form-control" required />
+          </div>
+          <button type="submit" class="btn btn-success me-2">
+            {{ editingAccount ? 'Modifier' : 'Ajouter' }}
+          </button>
+          <button type="button" class="btn btn-secondary" *ngIf="editingAccount" (click)="cancelEdit()">Annuler</button>
+        </form>
+      </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nom du compte</th>
+                <th>Numéro de compte</th>
+                <th>Solde</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let account of accounts" (click)="goToAccountDetails(account.id)" style="cursor: pointer;">
+                <td>{{ account.accountName }}</td>
+                <td>{{ account.accountNumber }}</td>
+                <td>{{ account.balance }}€</td>
+                <td>
+                    <button class="btn btn-primary me-2" (click)="editAccount(account)">Modifier</button>
+                    <button class="btn btn-danger" (click)="deleteAccount(account.id)">Supprimer</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

@@ -2,7 +2,6 @@ package bank_manager.back_end.controller;
 
 import bank_manager.back_end.dto.AccountDto;
 import bank_manager.back_end.dto.UserDto;
-import bank_manager.back_end.entity.User;
 import bank_manager.back_end.service.AccountService;
 import bank_manager.back_end.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -41,8 +40,8 @@ public class AccountController {
     }
 
     @PostMapping
-    public ResponseEntity<AccountDto> createAccount(@RequestBody AccountDto accountDto){
-        return new ResponseEntity<>(accountService.createAccount(accountDto), HttpStatus.CREATED);
+    public ResponseEntity<List<AccountDto>> createAccount(@RequestAttribute("entityId") Long userId,@RequestBody AccountDto accountDto){
+        return new ResponseEntity<>(accountService.createAccount(userId,accountDto), HttpStatus.CREATED);
     }
 
     @PostMapping("{accountId}/users/{userId}")
@@ -50,9 +49,11 @@ public class AccountController {
         return new ResponseEntity<>(accountService.addUserToAccount(accountId, userId), HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
-    public  ResponseEntity<AccountDto> updateAccount(@PathVariable Long id, @RequestBody AccountDto accountDto){
-        return new ResponseEntity<>(accountService.updateAccount(id, accountDto), HttpStatus.OK);
+    @PatchMapping("/{accountId}")
+    public  ResponseEntity<List<AccountDto>> updateAccount(@RequestAttribute("entityId") Long entityId,
+                                                           @PathVariable Long accountId,
+                                                           @RequestBody AccountDto accountDto){
+        return new ResponseEntity<>(accountService.updateAccount(entityId, accountId, accountDto), HttpStatus.OK);
     }
 
     @PatchMapping("{accountId}/main-user/{userId}")
@@ -60,9 +61,10 @@ public class AccountController {
         return new ResponseEntity<>(accountService.changeMainUser(accountId, userId), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<AccountDto> deleteAccount(@PathVariable Long id){
-        return new ResponseEntity<>(accountService.deleteAccount(id), HttpStatus.OK);
+    @DeleteMapping("/{accountId}")
+    public ResponseEntity<List<AccountDto>> deleteAccount(@RequestAttribute("entityId") Long entityId,
+                                                    @PathVariable Long accountId){
+        return new ResponseEntity<>(accountService.deleteAccount(entityId, accountId), HttpStatus.OK);
     }
 
     @DeleteMapping("{accountId}/users/{userId}")

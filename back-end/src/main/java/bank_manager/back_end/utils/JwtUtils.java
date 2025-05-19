@@ -5,8 +5,6 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Objects;
 
@@ -37,16 +35,21 @@ public class JwtUtils {
                 .getBody();
     }
 
-    public static boolean isTokenValid(String token) {
-        Claims claims = getAllClaims(token);
-        final Long entityId = getEntityId(claims);
-        final EntityType entityType = getEntityType(claims);
-        final Date expirationDate = getExpirationDate(claims);
+    public static boolean isTokenValid(String token) throws SignatureException {
+        try{
+            Claims claims = getAllClaims(token);
+            final Long entityId = getEntityId(claims);
+            final EntityType entityType = getEntityType(claims);
+            final Date expirationDate = getExpirationDate(claims);
 
-        if (entityId == null || entityType == null || expirationDate == null) return false;
-        if (isTokenExpired(expirationDate)) return false;
+            if (entityId == null || entityType == null || expirationDate == null) return false;
+            if (isTokenExpired(expirationDate)) return false;
 
-        return true;
+            return true;
+        }
+        catch (SignatureException e) {
+            return false;
+        }
     }
 
     public static Long getEntityId(Claims claims) {

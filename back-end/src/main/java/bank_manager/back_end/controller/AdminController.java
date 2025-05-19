@@ -23,12 +23,6 @@ public class AdminController {
     private final AdminService adminService;
     private final ResetDatabaseService resetDatabaseService;
 
-
-    @PostMapping
-    public ResponseEntity<AdminDto> createAdmin(@RequestBody @Valid AdminDto adminDto){
-        return new ResponseEntity<>(this.adminService.createAdmin(adminDto), HttpStatus.CREATED);
-    }
-
     @GetMapping
     public ResponseEntity<List<AdminDto>> getAllAdmins(){
         return new ResponseEntity<>(this.adminService.getAllAdmins(), HttpStatus.OK);

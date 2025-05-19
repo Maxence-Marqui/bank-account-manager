@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Getter
@@ -21,15 +22,15 @@ public class AccountDto {
     @NotNull(message = "Account name must not be null")
     private String accountName;
     private String accountNumber;
-    private Long mainUserId;
-    private List<Long> userIds;
+    private HashMap<String, Object> mainUser;
+    private List<HashMap<String, Object>> users;
     private Double balance;
     private Flag flagId;
 
     @NotNull(message = "Status must not be null")
     private EntityStatus status;
 
-    public List<Long> getUserIds() {
-        return userIds != null ? userIds : new ArrayList<>();
+    public List<HashMap<String, Object>> getUser() {
+        return users != null ? users : new ArrayList<>();
     }
 }

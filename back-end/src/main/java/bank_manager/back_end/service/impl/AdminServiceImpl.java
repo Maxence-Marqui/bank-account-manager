@@ -20,12 +20,6 @@ public class AdminServiceImpl implements AdminService {
 
     private final AdminRepository adminRepository;
 
-    @Override
-    public AdminDto createAdmin(AdminDto adminDto) {
-        Admin admin = AdminMapper.toAdmin(adminDto);
-        Admin savedAdmin = adminRepository.save(admin);
-        return AdminMapper.toDto(savedAdmin);
-    }
 
     @Override
     public AdminDto updateAdmin(Long id, AdminDto adminDto) {

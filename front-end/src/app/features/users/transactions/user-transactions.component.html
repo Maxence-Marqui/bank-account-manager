@@ -1,0 +1,95 @@
+<div class="container">
+    <h2 class="mb-4">Effectuer une transaction</h2>
+
+    <!-- Sélection du compte source -->
+    <div class="mb-3">
+        <label for="sourceAccount" class="form-label">Compte source :</label>
+        <select class="form-select" [(ngModel)]="transaction.fromAccountNumber">
+            <option *ngFor="let account of userAccounts" [value]="account.accountNumber">
+                {{ account.accountName }} - {{ account.balance | number:'1.2-2' }} €
+            </option>
+        </select>
+    </div>
+
+    <!-- Sélection du type de transaction -->
+    <div class="mb-3">
+        <label class="form-label">Type de transaction :</label>
+        <div class="d-flex gap-3">
+            <button class="btn"
+                [ngClass]="{'btn-primary': transactionType === 'BENEFICIARY', 'btn-outline-primary': transactionType !== 'BENEFICIARY'}"
+                (click)="setTransactionType('BENEFICIARY')">
+                Vers un bénéficiaire
+            </button>
+            <button class="btn"
+                [ngClass]="{'btn-primary': transactionType === 'SELF', 'btn-outline-primary': transactionType !== 'SELF'}"
+                (click)="setTransactionType('SELF')">
+                Vers un de mes comptes
+            </button>
+        </div>
+    </div>
+
+    <!-- Sélection du bénéficiaire ou du compte destination -->
+    <div class="mb-3" *ngIf="transactionType === 'BENEFICIARY'">
+        <label for="beneficiary" class="form-label">Bénéficiaire :</label>
+        <select class="form-select" [(ngModel)]="transaction.toAccountNumber">
+            <option *ngFor="let beneficiary of userBeneficiaries" [value]="beneficiary.accountNumber">
+                {{ beneficiary.accountName }}
+            </option>
+        </select>
+    </div>
+
+    <div class="mb-3" *ngIf="transactionType === 'SELF'">
+        <label for="destinationAccount" class="form-label">Compte de destination :</label>
+        <select class="form-select" [(ngModel)]="transaction.toAccountNumber">
+            <option *ngFor="let account of userAccounts" [value]="account.accountNumber"
+                [disabled]="account.accountNumber === transaction.fromAccountNumber">
+                {{ account.accountName }} - {{ account.balance | number:'1.2-2' }} €
+            </option>
+        </select>
+    </div>
+
+    <!-- Saisie du montant -->
+    <div class="mb-3">
+        <label for="amount" class="form-label">Montant (€) :</label>
+        <input type="number" class="form-control" [(ngModel)]="transaction.amount" min="0.01">
+    </div>
+    <div>
+        <label>Note :</label><br>
+        <textarea [(ngModel)]="transaction.note" placeholder="Ajoutez une note..."></textarea>
+    </div>
+
+
+    <!-- Bouton de validation -->
+    <button class="btn btn-success w-100" (click)="submitTransaction()">Valider la transaction</button>
+
+    <!-- Historique des transactions -->
+    <div class="mt-5">
+        <h3>Historique des transactions</h3>
+
+        <table class="table table-striped mt-3" *ngIf="recentTransactions.length > 0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Date</th>
+                    <th>Source</th>
+                    <th>Destination</th>
+                    <th>Montant</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let transaction of recentTransactions">
+                    <td>{{ transaction.createdAt | date:'dd/MM/yyyy' }}</td>
+                    <td>{{ transaction.sourceAccountName }}</td>
+                    <td>{{ transaction.destinationName }}</td>
+                    <td [ngClass]="{'text-success': transaction.amount > 0, 'text-danger': transaction.amount < 0}">
+                        {{ transaction.amount | number:'1.2-2' }} €
+                    </td>
+                    <td>{{ transaction.type }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p *ngIf="recentTransactions.length === 0" class="text-muted">Aucune transaction récente.</p>
+    </div>
+
+</div>

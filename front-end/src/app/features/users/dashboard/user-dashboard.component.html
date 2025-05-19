@@ -1,0 +1,16 @@
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <app-user-active-accounts [accounts]="lastAccountsUsed"></app-user-active-accounts>
+        </div>
+        <div class="col-md-6">
+            <app-user-last-beneficiaries [beneficiaries]="lastBeneficiariesUsed"></app-user-last-beneficiaries>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <app-user-last-transactions [transactions]="lastTransactionsMade"></app-user-last-transactions>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,59 @@
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-body">
+      <h3 class="card-title text-center">Inscription</h3>
+
+      <!-- Toggle Admin/User -->
+      <div class="form-check form-switch mb-3">
+        <input class="form-check-input" type="checkbox" id="isAdminToggle" (change)="toggleAdmin()" [checked]="isAdmin">
+        <label class="form-check-label" for="isAdminToggle">S'inscrire en tant qu'Admin</label>
+      </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+
+        <div class="mb-3">
+          <label for="firstName" class="form-label">Prénom</label>
+          <input type="text" id="firstName" class="form-control" formControlName="firstName">
+        </div>
+
+        <div class="mb-3">
+          <label for="lastName" class="form-label">Nom</label>
+          <input type="text" id="lastName" class="form-control" formControlName="lastName">
+        </div>
+
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" id="email" class="form-control" formControlName="email">
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label">Mot de passe</label>
+          <input type="password" id="password" class="form-control" formControlName="password">
+        </div>
+
+        <div class="mb-3">
+          <label for="birthday" class="form-label">Date de naissance</label>
+          <input type="date" id="birthday" class="form-control" formControlName="birthday">
+        </div>
+
+        <div class="mb-3">
+          <label for="phoneNumber" class="form-label">Numéro de téléphone</label>
+          <input type="text" id="phoneNumber" class="form-control" formControlName="phoneNumber">
+        </div>
+
+        <!-- Champ AdminTier (visible seulement pour les admins) -->
+        <div class="mb-3" *ngIf="isAdmin">
+          <label for="adminTier" class="form-label">Niveau d'admin</label>
+          <select id="adminTier" class="form-control" formControlName="adminTier">
+            <option value="DEFAULT_TIER">Par défaut</option>
+            <option value="SUPER_ADMIN">Super Admin</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100" [disabled]="registerForm.invalid">
+          S'inscrire
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

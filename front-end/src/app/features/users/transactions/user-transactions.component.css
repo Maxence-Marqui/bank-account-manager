@@ -1,0 +1,15 @@
+textarea {
+    width: 100%;
+    min-height: 80px;
+    resize: vertical; /* Permet à l'utilisateur d'ajuster la hauteur */
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+  }
+  
+  textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }

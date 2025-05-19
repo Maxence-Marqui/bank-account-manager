@@ -1,11 +1,11 @@
 package bank_manager.back_end.controller;
 
+import bank_manager.back_end.dto.AdminDto;
 import bank_manager.back_end.dto.AdminLoginDto;
 import bank_manager.back_end.dto.UserDto;
 import bank_manager.back_end.dto.UserLoginDto;
 import bank_manager.back_end.enums.EntityType;
 import bank_manager.back_end.service.AuthService;
-import bank_manager.back_end.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,21 +25,36 @@ public class AuthController {
     @Autowired
     private final AuthService authService;
 
-    @Autowired
-    private final UserService userService;
 
     @PostMapping("/login/users")
-    public String loginUsers(@RequestBody @Valid UserLoginDto userLoginDto) throws AuthenticationException {
-        return authService.login(EntityType.USER,userLoginDto.getEmail(), userLoginDto.getPassword());
+    public ResponseEntity<?> loginUsers(@RequestBody @Valid UserLoginDto userLoginDto) throws AuthenticationException {
+        return new ResponseEntity<>(
+                authService.login(
+                        EntityType.USER,
+                        userLoginDto.getEmail(),
+                        userLoginDto.getPassword()),
+                HttpStatus.OK
+        );
     }
 
     @PostMapping("/login/admins")
-    public String loginAdmins(@RequestBody @Valid AdminLoginDto adminLoginDto) throws AuthenticationException {
-        return authService.login(EntityType.ADMIN, adminLoginDto.getEmail(), adminLoginDto.getPassword());
+    public ResponseEntity<?> loginAdmins(@RequestBody @Valid AdminLoginDto adminLoginDto) throws AuthenticationException {
+        return new ResponseEntity<>(
+                authService.login(
+                        EntityType.ADMIN,
+                        adminLoginDto.getEmail(),
+                        adminLoginDto.getPassword()),
+                HttpStatus.OK
+        );
     }
 
-    @PostMapping("/register")
+    @PostMapping("/register/user")
     public ResponseEntity<UserDto> createUser(@RequestBody @Valid UserDto userDto){
-        return new ResponseEntity<>(userService.createUser(userDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(authService.createUser(userDto), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/register/admin")
+    public ResponseEntity<AdminDto> createAdmin(@RequestBody @Valid AdminDto adminDto){
+        return new ResponseEntity<>(authService.createAdmin(adminDto), HttpStatus.CREATED);
     }
 }

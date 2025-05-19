@@ -8,6 +8,7 @@ import bank_manager.back_end.repository.UserRepository;
 import bank_manager.back_end.repository.UsersAccountsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,16 +30,29 @@ public class AccountMapper {
 
     public static AccountDto toDto(Account account){
 
-        List<Long> userIds = account.getAccountUsers().stream()
-                .map(usersAccounts -> usersAccounts.getUser().getId())
-                .toList();
+        List<HashMap<String, Object>> users = account.getAccountUsers().stream()
+                .map(usersAccounts -> {
+                    User user = usersAccounts.getUser();
+                    HashMap<String, Object> userData = new HashMap<>();
+                    userData.put("firstName", user.getFirstName());
+                    userData.put("lastName", user.getLastName());
+                    userData.put("id", user.getId());
+
+                    return userData;
+                }).toList();
+
+        User user = account.getMainUser();
+        HashMap<String, Object> mainUser = new HashMap<>();
+        mainUser.put("firstName", user.getFirstName());
+        mainUser.put("lastName", user.getLastName());
+        mainUser.put("id", user.getId());
 
         return new AccountDto(
                 account.getId(),
                 account.getAccountName(),
                 account.getAccountNumber(),
-                account.getMainUser().getId(),
-                userIds,
+                mainUser,
+                users,
                 account.getBalance(),
                 account.getFlagId(),
                 account.getStatus()
